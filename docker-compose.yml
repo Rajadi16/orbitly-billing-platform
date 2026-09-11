@@ -1,0 +1,81 @@
+services:
+
+  # ── PostgreSQL 16 ───────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: orbitly-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       orbitly
+      POSTGRES_USER:     ${DB_USER:-orbitly}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-orbitly}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-orbitly} -d orbitly"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Kafka (KRaft — no Zookeeper) ────────────────────────────────────────────
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: orbitly-kafka
+    restart: unless-stopped
+    environment:
+      # KRaft mode — single combined broker+controller node
+      KAFKA_CFG_NODE_ID:                          "1"
+      KAFKA_CFG_PROCESS_ROLES:                    "broker,controller"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS:         "1@kafka:9093"
+
+      # Listeners
+      KAFKA_CFG_LISTENERS:                        "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS:             "PLAINTEXT://kafka:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP:   "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES:        "CONTROLLER"
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME:       "PLAINTEXT"
+
+      # Idempotent producer support
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR:             "1"
+      KAFKA_CFG_MIN_INSYNC_REPLICAS:                       "1"
+
+      # Auto-create topics (billing-events will be auto-created on first use)
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/bitnami/kafka
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # ── Spring Boot App ─────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orbitly-app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_URL:                   jdbc:postgresql://postgres:5432/orbitly
+      KAFKA_BOOTSTRAP_SERVERS:  kafka:9092
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  kafka_data:
