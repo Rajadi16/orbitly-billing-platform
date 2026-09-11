@@ -31,15 +31,30 @@ public class InvoiceEventProducer {
      */
     public void publishInvoiceCreated(UUID invoiceId, long amountCents, String currency) {
         InvoiceEventMessage message = new InvoiceEventMessage(
-                UUID.randomUUID().toString(),    // eventId — consumer uses this for idempotency
+                UUID.randomUUID().toString(),
                 invoiceId.toString(),
                 "invoice.created",
                 amountCents,
                 currency,
                 OffsetDateTime.now()
         );
-
         publish(invoiceId.toString(), message);
+    }
+
+    /**
+     * Published when Stripe confirms or fails a payment.
+     * Keyed by paymentIntentId — not an invoiceId, but preserves per-PI ordering.
+     */
+    public void publishPaymentUpdated(String paymentIntentId, String eventType, String rawPayload) {
+        InvoiceEventMessage message = new InvoiceEventMessage(
+                UUID.randomUUID().toString(),
+                paymentIntentId,              // invoiceId field reused for PI id here
+                eventType,
+                0L,
+                "N/A",
+                OffsetDateTime.now()
+        );
+        publish(paymentIntentId, message);
     }
 
     private void publish(String key, InvoiceEventMessage message) {
