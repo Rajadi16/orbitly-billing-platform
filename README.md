@@ -76,7 +76,7 @@ docker-compose.yml
 ## Roadmap (session-by-session)
 
 - [x] `0` — Repo scaffold, Docker Compose, README
-- [ ] `1` — JWT auth (register / login endpoints)
+- [x] `1` — JWT auth (register / login endpoints)
 - [ ] `2` — Stripe webhook ingestion → Kafka producer
 - [ ] `3` — Idempotent Kafka consumer → billing_events table
 - [ ] `4` — Billing summary REST endpoint
