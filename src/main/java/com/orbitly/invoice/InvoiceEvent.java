@@ -29,6 +29,10 @@ public class InvoiceEvent {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    /** Idempotency key from InvoiceEventMessage — unique, set by InvoiceEventConsumer. */
+    @Column(name = "event_id", unique = true)
+    private String eventId;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;

@@ -10,5 +10,8 @@ public interface InvoiceEventRepository extends JpaRepository<InvoiceEvent, UUID
     /** Used by the idempotent consumer to check if a Kafka offset was already processed. */
     boolean existsByKafkaOffset(long kafkaOffset);
 
+    /** Used by InvoiceEventConsumer to check if an eventId was already processed. */
+    boolean existsByEventId(String eventId);
+
     Optional<InvoiceEvent> findByKafkaOffset(long kafkaOffset);
 }
