@@ -35,8 +35,7 @@ public class InvoiceEventConsumer {
      */
     @KafkaListener(
             topics  = "${orbitly.kafka.topic.invoice-events}",
-            groupId = "${spring.kafka.consumer.group-id}",
-            errorHandler = "invoiceEventsErrorHandler"
+            groupId = "${spring.kafka.consumer.group-id}"
     )
     @Transactional
     public void consume(ConsumerRecord<String, String> record, Acknowledgment ack) {
