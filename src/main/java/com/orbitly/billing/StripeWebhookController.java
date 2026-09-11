@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/webhooks")
 @RequiredArgsConstructor
+@Tag(name = "Webhooks", description = "Endpoints for receiving third-party webhooks")
 public class StripeWebhookController {
 
     private final BillingEventProducer  billingEventProducer;
@@ -38,6 +41,7 @@ public class StripeWebhookController {
      * Raw String body is required for signature verification —
      * Spring must NOT parse it to a POJO before this point.
      */
+    @Operation(summary = "Stripe Webhook", description = "Receives events from Stripe. Signature verification is required.")
     @PostMapping(value = "/stripe", consumes = "application/json")
     public ResponseEntity<String> handleStripeEvent(
             @RequestBody String rawPayload,

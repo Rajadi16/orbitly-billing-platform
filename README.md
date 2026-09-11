@@ -4,6 +4,27 @@ Event-driven SaaS billing backend built with **Spring Boot 3**, **Kafka**, **JWT
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    Client([Client]) --> REST_API["REST API (Spring Boot)"]
+    Stripe([Stripe]) --> Webhook["Webhook Endpoint"]
+    
+    subgraph App
+        REST_API
+        Webhook
+    end
+    
+    App <--> DB[(PostgreSQL)]
+    
+    REST_API -- "publish (async)" --> Producer["Kafka Producer"]
+    Webhook -- "publish (async)" --> Producer
+    
+    Producer --> Topic["Kafka (invoice-events)"]
+    
+    Topic --> Consumer["Idempotent Consumer"]
+    Consumer -- "update status" --> DB
+```
+
 Orbitly exposes a secured REST API (JWT Bearer tokens) that accepts Stripe webhook events, publishes them as `billing-events` messages on a single Kafka topic, and processes them via an idempotent Kafka consumer that persists state to PostgreSQL — all services run in Docker with no local JDK or Kafka installation required.
 
 ## Stack

@@ -2,6 +2,8 @@ package com.orbitly.invoice;
 
 import com.orbitly.invoice.dto.CreateInvoiceRequest;
 import com.orbitly.invoice.dto.InvoiceResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,11 +20,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/invoices")
 @RequiredArgsConstructor
+@Tag(name = "Invoices", description = "Endpoints for managing invoices (requires JWT)")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
-    /** Create a new DRAFT invoice for the authenticated user. */
+    @Operation(summary = "Create DRAFT invoice", description = "Creates a new DRAFT invoice for the authenticated user.")
     @PostMapping
     public ResponseEntity<InvoiceResponse> create(
             @AuthenticationPrincipal UserDetails caller,
@@ -32,7 +35,7 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /** List all invoices belonging to the authenticated user (paginated). */
+    @Operation(summary = "List invoices", description = "Returns a paginated list of the authenticated user's invoices.")
     @GetMapping
     public ResponseEntity<Page<InvoiceResponse>> list(
             @AuthenticationPrincipal UserDetails caller,
@@ -41,7 +44,7 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.list(caller.getUsername(), pageable));
     }
 
-    /** Get a single invoice — returns 403 if invoice belongs to a different user. */
+    @Operation(summary = "Get single invoice", description = "Returns an invoice by ID. 403 if it belongs to another user.")
     @GetMapping("/{id}")
     public ResponseEntity<InvoiceResponse> get(
             @AuthenticationPrincipal UserDetails caller,
@@ -50,7 +53,7 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.get(caller.getUsername(), id));
     }
 
-    /** Transition invoice DRAFT → PENDING and stub-publish an invoice.created event. */
+    @Operation(summary = "Send invoice", description = "Transitions a DRAFT invoice to PENDING and publishes an event to Kafka.")
     @PostMapping("/{id}/send")
     public ResponseEntity<InvoiceResponse> send(
             @AuthenticationPrincipal UserDetails caller,
