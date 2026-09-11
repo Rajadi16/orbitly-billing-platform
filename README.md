@@ -1,5 +1,7 @@
 # Orbitly Billing Platform
 
+[![CI](https://github.com/Rajadi16/orbitly-billing-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Rajadi16/orbitly-billing-platform/actions/workflows/ci.yml)
+
 Event-driven SaaS billing backend built with **Spring Boot 3**, **Kafka**, **JWT auth**, and **Stripe** (test mode).
 
 ## Architecture
@@ -25,7 +27,7 @@ flowchart LR
     Consumer -- "update status" --> DB
 ```
 
-Orbitly exposes a secured REST API (JWT Bearer tokens) that accepts Stripe webhook events, publishes them as `billing-events` messages on a single Kafka topic, and processes them via an idempotent Kafka consumer that persists state to PostgreSQL — all services run in Docker with no local JDK or Kafka installation required.
+Orbitly exposes a secured REST API (JWT Bearer tokens) that accepts Stripe webhook events, publishes them as `invoice-events` messages on a Kafka topic, and processes them via an idempotent Kafka consumer that persists state to PostgreSQL — all services run in Docker with no local JDK or Kafka installation required.
 
 ## Stack
 
@@ -39,6 +41,7 @@ Orbitly exposes a secured REST API (JWT Bearer tokens) that accepts Stripe webho
 | Database | PostgreSQL 16 |
 | Migrations | Flyway |
 | Build | Maven (multi-stage Docker build) |
+| API Docs | OpenAPI / Swagger UI |
 
 ## Local Setup
 
@@ -60,6 +63,7 @@ cp .env.example .env
 docker compose up --build
 
 # App is live at http://localhost:8080
+# API Docs are live at http://localhost:8080/swagger-ui.html
 ```
 
 ### Useful commands
@@ -78,27 +82,11 @@ docker compose down
 docker compose down -v
 ```
 
-## Project Structure
+## Current Scope / MVP Limitations
 
-```
-src/
-└── main/
-    ├── java/com/orbitly/
-    │   └── OrbitlyApplication.java
-    └── resources/
-        ├── application.yml
-        └── db/migration/
-            └── V1__init_schema.sql
-Dockerfile
-docker-compose.yml
-.env.example
-```
+This project is built as a single-tenant MVP demonstrating event-driven patterns. Current limitations:
 
-## Roadmap (session-by-session)
-
-- [x] `0` — Repo scaffold, Docker Compose, README
-- [x] `1` — JWT auth (register / login endpoints)
-- [ ] `2` — Stripe webhook ingestion → Kafka producer
-- [ ] `3` — Idempotent Kafka consumer → billing_events table
-- [ ] `4` — Billing summary REST endpoint
-- [ ] `5` — Integration tests + CI
+- **Single-Tenant Only**: Currently built for a single tenant context. Multi-tenant RBAC is not yet implemented.
+- **Dead-Letter Queue (DLQ) Alerting**: Failed messages routed to the `invoice-events-dlq` topic are simply logged by the `DlqConsumer`. In a production environment, this should integrate with PagerDuty/Slack and persist to a `dead_letter_events` table for manual replay.
+- **Email/Notifications**: DRAFT to PENDING invoice transitions currently only publish a Kafka event and do not trigger a real email.
+- **Stripe Integration**: Runs entirely in test mode. Webhook handler processes `payment_intent.succeeded` and `payment_intent.payment_failed` only.
