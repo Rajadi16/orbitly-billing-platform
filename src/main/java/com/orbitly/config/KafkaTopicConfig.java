@@ -12,14 +12,25 @@ public class KafkaTopicConfig {
     @Value("${orbitly.kafka.topic.billing-events}")
     private String billingEventsTopic;
 
-    /**
-     * Declares the billing-events topic.
-     * Spring Kafka's KafkaAdmin will create it on startup if it doesn't exist.
-     */
+    @Value("${orbitly.kafka.topic.invoice-events}")
+    private String invoiceEventsTopic;
+
     @Bean
     public NewTopic billingEventsTopic() {
         return TopicBuilder.name(billingEventsTopic)
                 .partitions(1)
+                .replicas(1)
+                .build();
+    }
+
+    /**
+     * invoice-events: 3 partitions so events for different invoices
+     * can be processed in parallel while preserving per-invoice order (keyed by invoiceId).
+     */
+    @Bean
+    public NewTopic invoiceEventsTopic() {
+        return TopicBuilder.name(invoiceEventsTopic)
+                .partitions(3)
                 .replicas(1)
                 .build();
     }

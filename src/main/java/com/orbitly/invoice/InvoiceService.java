@@ -21,7 +21,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class InvoiceService {
 
-    private final InvoiceRepository invoiceRepository;
+    private final InvoiceRepository    invoiceRepository;
+    private final InvoiceEventProducer invoiceEventProducer;
     private final UserRepository    userRepository;
 
     // ── Create DRAFT invoice ─────────────────────────────────────────────────
@@ -71,8 +72,12 @@ public class InvoiceService {
         invoice.setStatus(InvoiceStatus.PENDING);
         invoiceRepository.save(invoice);
 
-        // TODO(step-4): publish invoice.created event to Kafka
-        log.info("Invoice [id={}] transitioned DRAFT → PENDING (Kafka publish stubbed until Step 4)",
+        invoiceEventProducer.publishInvoiceCreated(
+                invoice.getId(),
+                invoice.getAmountCents(),
+                invoice.getCurrency()
+        );
+        log.info("Invoice [id={}] transitioned DRAFT → PENDING, invoice.created published to Kafka",
                 invoice.getId());
 
         return InvoiceResponse.from(invoice);

@@ -55,6 +55,7 @@ orbitly:
   kafka:
     topic:
       billing-events: billing-events
+      invoice-events: invoice-events
 
 logging:
   level:
