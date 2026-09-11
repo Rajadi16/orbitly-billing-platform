@@ -1,5 +1,6 @@
 package com.orbitly.invoice;
 
+import com.orbitly.billing.InvoiceEventProducer;
 import com.orbitly.invoice.dto.CreateInvoiceRequest;
 import com.orbitly.invoice.dto.InvoiceResponse;
 import com.orbitly.user.User;
