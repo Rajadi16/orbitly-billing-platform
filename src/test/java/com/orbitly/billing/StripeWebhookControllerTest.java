@@ -17,7 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(
         controllers = StripeWebhookController.class,
-        excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+        excludeAutoConfiguration = {
+                org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+                org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class,
+                org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class
+        },
         properties  = {
                 "orbitly.stripe.webhook-secret=whsec_test_secret_key_for_unit_tests",
                 "orbitly.stripe.api-key=sk_test_dummy",
