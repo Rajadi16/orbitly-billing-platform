@@ -111,10 +111,9 @@ public class BillingEventConsumer {
     }
 
     /**
-     * For unhandled or orphan events — persist without updating an invoice.
-     * We still record the offset to prevent reprocessing.
-     * Uses a dummy sentinel invoice with a known "system" entry,
-     * or simply skips the FK if none found.
+     * Handles unhandled event types by logging them without throwing exceptions.
+     * For orphan events where the invoiceId doesn't exist, we throw an exception
+     * to trigger retry → DLQ flow via DefaultErrorHandler.
      */
     private void persistEventOnly(String eventType, String rawPayload, long kafkaOffset) {
         // Find any invoice to satisfy the FK, or log and move on.

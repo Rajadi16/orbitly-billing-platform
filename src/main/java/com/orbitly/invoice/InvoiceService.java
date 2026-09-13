@@ -59,7 +59,7 @@ public class InvoiceService {
         return InvoiceResponse.from(invoice);
     }
 
-    // ── Send: DRAFT → PENDING (stubs Kafka — wired in Step 4) ───────────────
+    // ── Send: DRAFT → PENDING (publishes invoice.created event to Kafka) ─────
 
     @Transactional
     public InvoiceResponse send(String callerEmail, UUID invoiceId) {
