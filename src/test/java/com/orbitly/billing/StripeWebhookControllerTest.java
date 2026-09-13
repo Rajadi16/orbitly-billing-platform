@@ -21,7 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties  = {
                 "orbitly.stripe.webhook-secret=whsec_test_secret_key_for_unit_tests",
                 "orbitly.stripe.api-key=sk_test_dummy",
-                "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long"
+                "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
+                "orbitly.jwt.expiration-ms=3600000"
         }
 )
 class StripeWebhookControllerTest {

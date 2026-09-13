@@ -51,6 +51,7 @@ import static org.awaitility.Awaitility.await;
  */
 @SpringBootTest(properties = {
         "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
+        "orbitly.jwt.expiration-ms=3600000",
         "orbitly.stripe.api-key=sk_test_dummy",
         "orbitly.stripe.webhook-secret=whsec_dummy",
         "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
