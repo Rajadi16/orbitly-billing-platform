@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: orbitly-test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  flyway:
+    enabled: false  # Disable for tests; use Hibernate DDL
+
+# Test-specific configuration
+orbitly:
+  jwt:
+    secret: test-secret-key-must-be-at-least-32-chars-long-for-hmac-sha256
+    expiration-ms: 3600000  # 1 hour for tests
+
+  stripe:
+    api-key: sk_test_dummy_key_for_integration_tests
+    webhook-secret: whsec_dummy_secret_for_integration_tests
+
+  kafka:
+    topic:
+      billing-events: billing-events
+      invoice-events: invoice-events
+
+logging:
+  level:
+    com.orbitly: INFO
+    org.springframework.kafka: WARN
+    org.testcontainers: INFO
