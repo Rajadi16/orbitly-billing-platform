@@ -20,7 +20,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <java.version>21</java.version>
+    <java.version>17</java.version>
   </properties>
 
   <dependencies>
@@ -99,10 +99,11 @@
       <version>26.3.0</version>
     </dependency>
 
-    <!-- Lombok (reduces boilerplate) -->
+    <!-- Lombok (reduces boilerplate) - upgraded for Java 25 support -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <version>1.18.36</version>
       <optional>true</optional>
     </dependency>
 
@@ -147,11 +148,32 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Mockito Java 21+ support -->
+    <!-- Awaitility for async test assertions -->
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.2.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Mockito Java 21+ support (upgraded for Java 25 compatibility) -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>5.11.0</version>
+      <version>5.14.2</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- ByteBuddy upgrade for Java 25 support -->
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>1.15.10</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <version>1.15.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -168,6 +190,26 @@
               <artifactId>lombok</artifactId>
             </exclude>
           </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.36</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Dnet.bytebuddy.experimental=true</argLine>
         </configuration>
       </plugin>
     </plugins>
