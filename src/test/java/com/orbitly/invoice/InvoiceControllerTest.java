@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -27,16 +26,16 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(InvoiceController.class)
-@Import({com.orbitly.security.JwtAuthenticationFilter.class})
+@WebMvcTest(
+        controllers = InvoiceController.class,
+        excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
+)
 class InvoiceControllerTest {
 
     @Autowired MockMvc     mockMvc;
     @Autowired ObjectMapper objectMapper;
 
     @MockBean InvoiceService invoiceService;
-    @MockBean com.orbitly.security.JwtService jwtService;
-    @MockBean com.orbitly.security.UserDetailsServiceImpl userDetailsService;
 
     private static final String USER_EMAIL = "alice@orbitly.com";
     private static final UUID   INVOICE_ID = UUID.randomUUID();

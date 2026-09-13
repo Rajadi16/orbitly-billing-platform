@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -18,21 +17,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(
         controllers = StripeWebhookController.class,
+        excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
         properties  = {
                 "orbitly.stripe.webhook-secret=whsec_test_secret_key_for_unit_tests",
                 "orbitly.stripe.api-key=sk_test_dummy",
                 "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long"
         }
 )
-@Import({com.orbitly.security.JwtAuthenticationFilter.class})
 class StripeWebhookControllerTest {
 
     @Autowired MockMvc mockMvc;
 
     @MockBean BillingEventProducer billingEventProducer;
     @MockBean StripeWebhookService  stripeWebhookService;
-    @MockBean com.orbitly.security.JwtService jwtService;
-    @MockBean com.orbitly.security.UserDetailsServiceImpl userDetailsService;
 
     // The test webhook secret baked into properties below
     private static final String TEST_SECRET = "whsec_test_secret_key_for_unit_tests";
