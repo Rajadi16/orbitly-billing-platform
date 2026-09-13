@@ -45,7 +45,12 @@ public class StripeWebhookController {
     @PostMapping(value = "/stripe", consumes = "application/json")
     public ResponseEntity<String> handleStripeEvent(
             @RequestBody String rawPayload,
-            @RequestHeader("Stripe-Signature") String stripeSignature) {
+            @RequestHeader(value = "Stripe-Signature", required = false) String stripeSignature) {
+
+        if (stripeSignature == null || stripeSignature.isBlank()) {
+            log.warn("Missing Stripe-Signature header — rejecting webhook");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing signature");
+        }
 
         Event event;
         try {

@@ -28,12 +28,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(InvoiceController.class)
+@Import({com.orbitly.security.JwtAuthenticationFilter.class})
 class InvoiceControllerTest {
 
     @Autowired MockMvc     mockMvc;
     @Autowired ObjectMapper objectMapper;
 
     @MockBean InvoiceService invoiceService;
+    @MockBean com.orbitly.security.JwtService jwtService;
+    @MockBean com.orbitly.security.UserDetailsServiceImpl userDetailsService;
 
     private static final String USER_EMAIL = "alice@orbitly.com";
     private static final UUID   INVOICE_ID = UUID.randomUUID();
