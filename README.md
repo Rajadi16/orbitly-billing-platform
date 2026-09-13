@@ -90,3 +90,4 @@ This project is built as a single-tenant MVP demonstrating event-driven patterns
 - **Dead-Letter Queue (DLQ) Alerting**: Failed messages routed to the `invoice-events-dlq` topic are simply logged by the `DlqConsumer`. In a production environment, this should integrate with PagerDuty/Slack and persist to a `dead_letter_events` table for manual replay.
 - **Email/Notifications**: DRAFT to PENDING invoice transitions currently only publish a Kafka event and do not trigger a real email.
 - **Stripe Integration**: Runs entirely in test mode. Webhook handler processes `payment_intent.succeeded` and `payment_intent.payment_failed` only.
+- **Local Testing (Windows)**: Integration tests using Testcontainers require Docker on Linux/WSL2. They don't run reliably on native Windows Docker Desktop due to a known Testcontainers API compatibility issue, but pass in CI (Ubuntu).
