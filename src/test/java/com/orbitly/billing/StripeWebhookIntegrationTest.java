@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -46,7 +45,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {
                 "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
                 "orbitly.stripe.api-key=sk_test_dummy",
-                "orbitly.stripe.webhook-secret=whsec_integration_test_secret_key"
+                "orbitly.stripe.webhook-secret=whsec_integration_test_secret_key",
+                "spring.kafka.producer.bootstrap-servers=",
+                "spring.kafka.consumer.bootstrap-servers=",
+                "spring.kafka.admin.bootstrap-servers="
         }
 )
 @AutoConfigureMockMvc
@@ -62,9 +64,6 @@ class StripeWebhookIntegrationTest {
     @Autowired MockMvc mockMvc;
     @Autowired InvoiceRepository invoiceRepository;
     @Autowired UserRepository    userRepository;
-
-    @MockBean BillingEventProducer billingEventProducer;
-    @MockBean InvoiceEventProducer invoiceEventProducer;
 
     private static final String TEST_WEBHOOK_SECRET = "whsec_integration_test_secret_key";
     private static final String WEBHOOK_URL = "/api/v1/webhooks/stripe";

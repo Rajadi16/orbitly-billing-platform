@@ -21,7 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = {
                 "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
                 "orbitly.stripe.api-key=sk_test_dummy",
-                "orbitly.stripe.webhook-secret=whsec_dummy"
+                "orbitly.stripe.webhook-secret=whsec_dummy",
+                "spring.kafka.producer.bootstrap-servers=",
+                "spring.kafka.consumer.bootstrap-servers=",
+                "spring.kafka.admin.bootstrap-servers="
         }
 )
 @AutoConfigureMockMvc
