@@ -28,10 +28,9 @@ public class InvoiceController {
     @Operation(summary = "Create DRAFT invoice", description = "Creates a new DRAFT invoice for the authenticated user.")
     @PostMapping
     public ResponseEntity<InvoiceResponse> create(
-            @AuthenticationPrincipal UserDetails caller,
+            @AuthenticationPrincipal(expression = "username", errorOnInvalidType = false) String callerEmail,
             @Valid @RequestBody CreateInvoiceRequest request) {
 
-        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
         InvoiceResponse response = invoiceService.create(callerEmail, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -39,30 +38,27 @@ public class InvoiceController {
     @Operation(summary = "List invoices", description = "Returns a paginated list of the authenticated user's invoices.")
     @GetMapping
     public ResponseEntity<Page<InvoiceResponse>> list(
-            @AuthenticationPrincipal UserDetails caller,
+            @AuthenticationPrincipal(expression = "username", errorOnInvalidType = false) String callerEmail,
             @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
 
-        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
         return ResponseEntity.ok(invoiceService.list(callerEmail, pageable));
     }
 
     @Operation(summary = "Get single invoice", description = "Returns an invoice by ID. 403 if it belongs to another user.")
     @GetMapping("/{id}")
     public ResponseEntity<InvoiceResponse> get(
-            @AuthenticationPrincipal UserDetails caller,
+            @AuthenticationPrincipal(expression = "username", errorOnInvalidType = false) String callerEmail,
             @PathVariable UUID id) {
 
-        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
         return ResponseEntity.ok(invoiceService.get(callerEmail, id));
     }
 
     @Operation(summary = "Send invoice", description = "Transitions a DRAFT invoice to PENDING and publishes an event to Kafka.")
     @PostMapping("/{id}/send")
     public ResponseEntity<InvoiceResponse> send(
-            @AuthenticationPrincipal UserDetails caller,
+            @AuthenticationPrincipal(expression = "username", errorOnInvalidType = false) String callerEmail,
             @PathVariable UUID id) {
 
-        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
         return ResponseEntity.ok(invoiceService.send(callerEmail, id));
     }
 }
