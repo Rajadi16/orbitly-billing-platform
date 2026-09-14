@@ -33,6 +33,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {
+        "orbitly.security.enabled=false",
+        "spring.kafka.enabled=true",
         "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
         "orbitly.jwt.expiration-ms=3600000",
         "orbitly.stripe.api-key=sk_test_dummy",

@@ -31,7 +31,8 @@ public class InvoiceController {
             @AuthenticationPrincipal UserDetails caller,
             @Valid @RequestBody CreateInvoiceRequest request) {
 
-        InvoiceResponse response = invoiceService.create(caller.getUsername(), request);
+        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
+        InvoiceResponse response = invoiceService.create(callerEmail, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -41,7 +42,8 @@ public class InvoiceController {
             @AuthenticationPrincipal UserDetails caller,
             @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
 
-        return ResponseEntity.ok(invoiceService.list(caller.getUsername(), pageable));
+        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
+        return ResponseEntity.ok(invoiceService.list(callerEmail, pageable));
     }
 
     @Operation(summary = "Get single invoice", description = "Returns an invoice by ID. 403 if it belongs to another user.")
@@ -50,7 +52,8 @@ public class InvoiceController {
             @AuthenticationPrincipal UserDetails caller,
             @PathVariable UUID id) {
 
-        return ResponseEntity.ok(invoiceService.get(caller.getUsername(), id));
+        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
+        return ResponseEntity.ok(invoiceService.get(callerEmail, id));
     }
 
     @Operation(summary = "Send invoice", description = "Transitions a DRAFT invoice to PENDING and publishes an event to Kafka.")
@@ -59,6 +62,7 @@ public class InvoiceController {
             @AuthenticationPrincipal UserDetails caller,
             @PathVariable UUID id) {
 
-        return ResponseEntity.ok(invoiceService.send(caller.getUsername(), id));
+        String callerEmail = (caller != null) ? caller.getUsername() : "anonymous";
+        return ResponseEntity.ok(invoiceService.send(callerEmail, id));
     }
 }

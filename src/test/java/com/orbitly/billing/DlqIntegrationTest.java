@@ -50,6 +50,8 @@ import static org.awaitility.Awaitility.await;
  *  5. DlqConsumer logs the failed message
  */
 @SpringBootTest(properties = {
+        "orbitly.security.enabled=false",
+        "spring.kafka.enabled=true",
         "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
         "orbitly.jwt.expiration-ms=3600000",
         "orbitly.stripe.api-key=sk_test_dummy",
