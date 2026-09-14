@@ -12,6 +12,9 @@ spring:
 
 # Test-specific configuration
 orbitly:
+  security:
+    enabled: false  # Disable JWT security filter for tests
+  
   jwt:
     secret: test-secret-key-must-be-at-least-32-chars-long-for-hmac-sha256
     expiration-ms: 3600000  # 1 hour for tests
