@@ -50,12 +50,7 @@ import static org.awaitility.Awaitility.await;
  *  5. DlqConsumer logs the failed message
  */
 @SpringBootTest(properties = {
-        "orbitly.security.enabled=false",
         "spring.kafka.enabled=true",
-        "orbitly.jwt.secret=test-secret-key-must-be-at-least-32-chars-long",
-        "orbitly.jwt.expiration-ms=3600000",
-        "orbitly.stripe.api-key=sk_test_dummy",
-        "orbitly.stripe.webhook-secret=whsec_dummy",
         "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
         "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}",
         "spring.kafka.admin.bootstrap-servers=${spring.embedded.kafka.brokers}"
