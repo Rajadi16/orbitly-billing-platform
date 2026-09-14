@@ -10,6 +10,9 @@ spring:
   flyway:
     enabled: false  # Disable for tests; use Hibernate DDL
 
+  kafka:
+    enabled: false  # Disable Kafka configuration beans for tests
+
 # Test-specific configuration
 orbitly:
   security:
